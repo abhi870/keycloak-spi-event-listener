@@ -4,17 +4,52 @@ import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.admin.AdminEvent;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Map;
 
 public class LogInEventListenerProvider implements EventListenerProvider {
     @Override
     public void onEvent(Event event) {
-        System.out.println("Event Occurred:" + toString(event));
+       HttpClient httpClient = HttpClient.newHttpClient();
+        try {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(new URI("http://localhost:8990/useract"))
+                    .timeout(Duration.ofSeconds(10))
+                    .POST(HttpRequest.BodyPublishers.ofString(this.toString(event)))
+                    .build();
+            httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onEvent(AdminEvent adminEvent, boolean b) {
-        System.out.println("Admin Event Occurred:" + toString(adminEvent));
+        HttpClient httpClient = HttpClient.newHttpClient();
+        try {
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(new URI("http://localhost:8990/useract"))
+                    .timeout(Duration.ofSeconds(10))
+                    .POST(HttpRequest.BodyPublishers.ofString(this.toString(adminEvent)))
+                    .build();
+            httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
