@@ -1,54 +1,36 @@
 package com.demo.login.provider;
 
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.admin.AdminEvent;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.Map;
 
 public class LogInEventListenerProvider implements EventListenerProvider {
+
+    private KafkaProducer kafkaProducer = null;
+
+    public LogInEventListenerProvider() {
+        kafkaProducer = new KafkaTemplate().getKafkaProducer();
+    }
+
     @Override
     public void onEvent(Event event) {
-       HttpClient httpClient = HttpClient.newHttpClient();
         try {
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:8990/useract"))
-                    .timeout(Duration.ofSeconds(10))
-                    .POST(HttpRequest.BodyPublishers.ofString(this.toString(event)))
-                    .build();
-            httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            kafkaProducer.send(new ProducerRecord<String, String>("test", this.toString(event)));
+        } catch (Exception e) {
+            System.out.println();
         }
     }
 
     @Override
     public void onEvent(AdminEvent adminEvent, boolean b) {
-        HttpClient httpClient = HttpClient.newHttpClient();
         try {
-            HttpRequest httpRequest = HttpRequest.newBuilder()
-                    .uri(new URI("http://localhost:8990/useract"))
-                    .timeout(Duration.ofSeconds(10))
-                    .POST(HttpRequest.BodyPublishers.ofString(this.toString(adminEvent)))
-                    .build();
-            httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+            kafkaProducer.send(new ProducerRecord<String, String>("test", this.toString(adminEvent)));
+        } catch (Exception e) {
+            System.out.println();
         }
     }
 
