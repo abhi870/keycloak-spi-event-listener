@@ -1,6 +1,5 @@
 package com.demo.login.provider;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.keycloak.events.Event;
 import org.keycloak.events.EventListenerProvider;
@@ -10,28 +9,15 @@ import java.util.Map;
 
 public class LogInEventListenerProvider implements EventListenerProvider {
 
-    private KafkaProducer kafkaProducer = null;
-
-    public LogInEventListenerProvider(KafkaProducer kafkaProducer) {
-        this.kafkaProducer = kafkaProducer;
-    }
 
     @Override
     public void onEvent(Event event) {
-        try {
-            kafkaProducer.send(new ProducerRecord<String, String>("test", this.toString(event)));
-        } catch (Exception e) {
-            System.out.println();
-        }
+       KafkaTemplate.getProducer().send(new ProducerRecord("test",this.toString(event)));
     }
 
     @Override
     public void onEvent(AdminEvent adminEvent, boolean b) {
-        try {
-            kafkaProducer.send(new ProducerRecord<String, String>("test", this.toString(adminEvent)));
-        } catch (Exception e) {
-            System.out.println();
-        }
+       KafkaTemplate.getProducer().send(new ProducerRecord("test", this.toString(adminEvent)));
     }
 
     @Override
