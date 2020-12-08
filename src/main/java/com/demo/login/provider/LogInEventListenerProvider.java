@@ -12,8 +12,8 @@ public class LogInEventListenerProvider implements EventListenerProvider {
 
     private KafkaProducer kafkaProducer = null;
 
-    public LogInEventListenerProvider() {
-        kafkaProducer = new KafkaTemplate().getKafkaProducer();
+    public LogInEventListenerProvider(KafkaProducer kafkaProducer) {
+        this.kafkaProducer = kafkaProducer;
     }
 
     @Override
